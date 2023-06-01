@@ -25,8 +25,8 @@ class Eunomia:
         self.embeddings_model = os.environ.get("EMBEDDINGS_MODEL")
         self.ignore_folders = json.loads(os.environ.get("IGNORE_FOLDERS"))
 
-        self.model_n_ctx = os.environ.get("MODEL_N_CTX")
-        self.target_chunks = os.environ.get("TARGET_SOURCE_CHUNKS")
+        self.model_n_ctx = int(os.environ.get("MODEL_N_CTX"))
+        self.target_chunks = int(os.environ.get("TARGET_SOURCE_CHUNKS"))
 
     def get_cwd(self):
         current_working_dir = os.getcwd()
@@ -46,17 +46,27 @@ class Eunomia:
             embedding_function=embeddings,
             client_settings=CHROMA_SETTINGS,
         )
-        retriever = db.as_retriever(search_kwargs={"k": int(self.target_chunks)})
+        retriever = db.as_retriever(search_kwargs={"k": self.target_chunks})
         llm = GPT4All(
             model=self.llm,
             n_ctx=self.model_n_ctx,
             backend="gptj",
-            callbacks=StreamingStdOutCallbackHandler,
+            callbacks=[StreamingStdOutCallbackHandler()],
         )
 
         qa = ConversationalRetrievalChain.from_llm(llm, retriever=retriever)
 
         chat_history = []
+
+        print(
+        r"""
+     ______   __  __   __   __   ______   __    __   __   ______    
+    /\  ___\ /\ \/\ \ /\ "-.\ \ /\  __ \ /\ "-./  \ /\ \ /\  __ \   
+    \ \  __\ \ \ \_\ \\ \ \-.  \\ \ \/\ \\ \ \-./\ \\ \ \\ \  __ \  
+     \ \_____\\ \_____\\ \_\\"\_\\ \_____\\ \_\ \ \_\\ \_\\ \_\ \_\ 
+      \/_____/ \/_____/ \/_/ \/_/ \/_____/ \/_/  \/_/ \/_/ \/_/\/_/ 
+        """
+        )
 
         while True:
             question = input("\nEnter a query: ")

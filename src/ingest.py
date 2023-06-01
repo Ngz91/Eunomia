@@ -9,6 +9,7 @@ from langchain.document_loaders import (
     CSVLoader,
     PDFMinerLoader,
     TextLoader,
+    PythonLoader,
     NotebookLoader,
     UnstructuredEPubLoader,
     UnstructuredHTMLLoader,
@@ -32,8 +33,8 @@ LOADER_MAPPING = {
     ".md": (UnstructuredMarkdownLoader, {}),
     ".pdf": (PDFMinerLoader, {}),
     ".ipynb": (NotebookLoader, {}),
+    ".py": (PythonLoader, {}),
     ".txt": (TextLoader, {"encoding": "utf8"}),
-    ".py": (TextLoader, {"encoding": "utf8"}),
     ".cpp": (TextLoader, {"encoding": "utf8"}),
     ".hpp": (TextLoader, {"encoding": "utf8"}),
     ".css": (TextLoader, {"encoding": "utf8"}),
@@ -164,4 +165,4 @@ class Ingestor:
         db.persist()
         db = None
 
-        print(f"Ingestion complete, run {'eunomia start'} to start analysing code!")
+        print(f"Ingestion complete, you can now run 'eunomia start' to use the LLM to interact with your code!")
