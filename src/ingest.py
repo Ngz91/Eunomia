@@ -5,6 +5,8 @@ import concurrent.futures
 from typing import List
 from tqdm import tqdm
 
+from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
+
 from langchain.document_loaders import (
     CSVLoader,
     PDFMinerLoader,
@@ -97,11 +99,11 @@ class Ingestor:
             for file_path in filtered_files:
                 file_size = os.path.getsize(file_path)
                 if file_size > self.threshold:
-                    with concurrent.futures.ProcessPoolExecutor() as executor:
+                    with ProcessPoolExecutor() as executor:
                         future = executor.submit(self.load_single_document, file_path)
                         results.append(future.result())
                 else:
-                    with concurrent.futures.ThreadPoolExecutor() as executor:
+                    with ThreadPoolExecutor() as executor:
                         future = executor.submit(self.load_single_document, file_path)
                         results.append(future.result())
                 pbar.update()
@@ -128,15 +130,21 @@ class Ingestor:
             print("No new documents to load")
             exit(0)
         print(f"Loaded {len(documents)} new documents from {self.cwd}")
-        for doc in documents:
-            ext = doc.metadata["source"].split(".")[-1]
-            if ext not in doc_dict:
-                doc_dict[ext] = []
-            doc_dict[ext].append(doc)
-        all_docs = []
-        for ext, docs in doc_dict.items():
-            split_docs = self.split_docs(docs, language=LANG_MAPPINGS[ext])
-            all_docs.extend(split_docs)
+        with ThreadPoolExecutor() as executor:
+            # Create list of futures for each document split
+            futures = []
+            for doc in documents:
+                ext = doc.metadata["source"].split(".")[-1]
+                if ext not in doc_dict:
+                    doc_dict[ext] = []
+                futures.append(
+                    executor.submit(self.split_docs, [doc], language=LANG_MAPPINGS[ext])
+                )
+            # Gather results from futures as they complete
+            all_docs = []
+            for future in concurrent.futures.as_completed(futures):
+                split_docs = future.result()
+                all_docs.extend(split_docs)
         print(
             f"Split into {len(all_docs)} chunks of text (max. {self.chunk_size} tokens each)"
         )
