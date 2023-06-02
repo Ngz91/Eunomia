@@ -7,54 +7,12 @@ from tqdm import tqdm
 
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 
-from langchain.document_loaders import (
-    TextLoader,
-    PythonLoader,
-    UnstructuredHTMLLoader,
-    UnstructuredMarkdownLoader,
-)
-
-from langchain.text_splitter import RecursiveCharacterTextSplitter, Language
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import Chroma
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.docstore.document import Document
-from src.constants import CHROMA_SETTINGS
 
-# Map file extensions to document loaders and their arguments
-LOADER_MAPPING = {
-    ".py": (PythonLoader, {}),
-    ".html": (UnstructuredHTMLLoader, {}),
-    ".md": (UnstructuredMarkdownLoader, {}),
-    ".cpp": (TextLoader, {"encoding": "utf8"}),
-    ".hpp": (TextLoader, {"encoding": "utf8"}),
-    ".js": (TextLoader, {"encoding": "utf8"}),
-    ".rb": (TextLoader, {"encoding": "utf8"}),
-    ".rs": (TextLoader, {"encoding": "utf8"}),
-    ".java": (TextLoader, {"encoding": "utf8"}),
-    ".jar": (TextLoader, {"encoding": "utf8"}),
-    ".go": (TextLoader, {"encoding": "utf8"}),
-    ".scala": (TextLoader, {"encoding": "utf8"}),
-    ".sc": (TextLoader, {"encoding": "utf8"}),
-    ".swift": (TextLoader, {"encoding": "utf8"}),
-}
-
-# Map supported file extensions to langchain's Language dataclass
-LANG_MAPPINGS = {
-    "py": Language.PYTHON,
-    "cpp": Language.CPP,
-    "hpp": Language.CPP,
-    "js": Language.JS,
-    "html": Language.HTML,
-    "md": Language.MARKDOWN,
-    "rb": Language.RUBY,
-    "rs": Language.RUST,
-    "java": Language.JAVA,
-    "jar": Language.JAVA,
-    "go": Language.GO,
-    "scala": Language.SCALA,
-    "sc": Language.SCALA,
-    "swift": Language.SWIFT,
-}
+from src.constants import CHROMA_SETTINGS, LOADER_MAPPING, LANG_MAPPINGS
 
 
 class Ingestor:
@@ -88,7 +46,7 @@ class Ingestor:
 
         raise ValueError(f"Unsupported file extension '{ext}'")
 
-    def load_documents(self) -> List[Document]:
+    def load_documents(self, ignored_files: List[str] = []) -> List[Document]:
         """
         Loads documents from files in the cwd directory and its subdirectories.
         Excludes files in specified ignore folders and only loads files that are above
@@ -109,6 +67,12 @@ class Ingestor:
                 ignore_folder in file_path for ignore_folder in self.ignore_folders
             ):
                 filtered_files.append(file_path)
+
+        # Remove files that are already in the vectorstore if it already exists
+        if ignored_files:
+            filtered_files = [
+                file_path for file_path in all_files if file_path not in ignored_files
+            ]
 
         results = []
 
@@ -142,7 +106,9 @@ class Ingestor:
         :return: A List of Document objects.
         :rtype: List[Document]
         """
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=self.chunk_size, chunk_overlap=self.chunk_overlap
+        )
         text_splitter.from_language(language)
         texts = text_splitter.split_documents(docs_list)
         return texts
@@ -157,7 +123,7 @@ class Ingestor:
         """
         doc_dict = {}
         print(f"Loading documents from {self.cwd}")
-        documents = self.load_documents()
+        documents = self.load_documents(ignored_files=ignored_files)
         if not documents:
             print("No new documents to load")
             exit(0)
@@ -184,8 +150,13 @@ class Ingestor:
 
     def does_vectorstore_exist(self) -> bool:
         """
-        Checks if the vector database exists.
-        """
+    	Check if the vectorstore exists by verifying the existence of the index file and
+    	the collections and embeddings parquet files.
+    	
+    	:param self: An instance of the class.
+    	
+    	:return: A boolean indicating whether the vectorstore exists or not.
+    	"""
         index_path = os.path.join(self.db, "index")
         if os.path.exists(index_path):
             collections_path = os.path.join(self.db, "chroma-collections.parquet")
@@ -241,5 +212,5 @@ class Ingestor:
         db = None
 
         print(
-            f"Ingestion complete, you can now run 'eunomia start' to use the LLM to interact with your code!"
+            f"Vectorstore created, you can now run 'eunomia start' to use the LLM to interact with your code!"
         )
