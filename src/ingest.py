@@ -31,7 +31,8 @@ class Ingestor:
 
     def load_single_document(self, file_path: str) -> Document:
         """
-        Loads a single document from a file path using a loader based on the file extension.
+        Load a single document from a file path using a loader based on the file extension.
+
         :param file_path: A string representing the path to the file to be loaded.
         :type file_path: str
         :return: A Document object representing the loaded document.
@@ -39,12 +40,11 @@ class Ingestor:
         :raises ValueError: If the file extension is not supported.
         """
         ext = "." + file_path.rsplit(".", 1)[-1]
-        if ext in LOADER_MAPPING:
-            loader_class, loader_args = LOADER_MAPPING[ext]
-            loader = loader_class(file_path, **loader_args)
-            return loader.load()[0]
-
-        raise ValueError(f"Unsupported file extension '{ext}'")
+        if ext not in LOADER_MAPPING:
+            raise ValueError(f"Unsupported file extension '{ext}'")
+        loader_class, loader_args = LOADER_MAPPING[ext]
+        loader = loader_class(file_path, **loader_args)
+        return loader.load()[0]
 
     def load_documents(self, ignored_files: List[str] = []) -> List[Document]:
         """
@@ -52,45 +52,36 @@ class Ingestor:
         Excludes files in specified ignore folders and only loads files that are above
         a specified file size threshold. Uses multi-processing if file size is above the
         threshold and multi-threading otherwise.
+        
         Returns:
             A list of loaded documents.
         """
-        all_files = []
-        for ext in LOADER_MAPPING:
-            all_files.extend(
-                glob.glob(os.path.join(self.cwd, f"**/*{ext}"), recursive=True)
-            )
-        filtered_files = []
-
-        for file_path in all_files:
-            if not any(
-                ignore_folder in file_path for ignore_folder in self.ignore_folders
-            ):
-                filtered_files.append(file_path)
-
-        # Remove files that are already in the vectorstore if it already exists
-        if ignored_files:
-            filtered_files = [
-                file_path for file_path in all_files if file_path not in ignored_files
-            ]
-
         results = []
-
-        with tqdm(
-            total=len(filtered_files), desc="Loading new documents", ncols=80
-        ) as pbar:
-            for file_path in filtered_files:
-                file_size = os.path.getsize(file_path)
-                if file_size > self.threshold:
-                    with ProcessPoolExecutor() as executor:
-                        future = executor.submit(self.load_single_document, file_path)
-                        results.append(future.result())
-                else:
-                    with ThreadPoolExecutor() as executor:
-                        future = executor.submit(self.load_single_document, file_path)
-                        results.append(future.result())
-                pbar.update()
-
+        with tqdm(desc="Loading new documents", ncols=80) as pbar:
+            for entry in os.scandir(self.cwd):
+                if entry.is_file():
+                    file_path = entry.path
+                    if any(
+                        ignore_folder in file_path
+                        for ignore_folder in self.ignore_folders
+                    ):
+                        continue
+                    if file_path in ignored_files:
+                        continue
+                    file_size = entry.stat().st_size
+                    if file_size <= self.threshold:
+                        with ThreadPoolExecutor() as executor:
+                            future = executor.submit(
+                                self.load_single_document, file_path
+                            )
+                            results.append(future.result())
+                    else:
+                        with ProcessPoolExecutor() as executor:
+                            future = executor.submit(
+                                self.load_single_document, file_path
+                            )
+                            results.append(future.result())
+                    pbar.update()
         return results
 
     def split_docs(self, docs_list: List[Document], language: str) -> List[Document]:
@@ -98,6 +89,7 @@ class Ingestor:
         Splits a list of documents into smaller chunks using the RecursiveCharacterTextSplitter
         object. The function takes a list of Document objects and a language string as
         parameters. The function returns a List of Document objects.
+        
         :param docs_list: The list of Document objects to be split.
         :type docs_list: List[Document]
         :param language: The language string to be used by the RecursiveCharacterTextSplitter
@@ -106,16 +98,18 @@ class Ingestor:
         :return: A List of Document objects.
         :rtype: List[Document]
         """
-        text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=self.chunk_size, chunk_overlap=self.chunk_overlap
+        text_splitter = RecursiveCharacterTextSplitter.from_language(
+            chunk_size=self.chunk_size,
+            chunk_overlap=self.chunk_overlap,
+            language=language,
         )
-        text_splitter.from_language(language)
         texts = text_splitter.split_documents(docs_list)
         return texts
 
     def process_documents(self, ignored_files: List[str] = []) -> List[Document]:
         """
         Process documents and split them into smaller chunks of text.
+        
         :param ignored_files: A list of files to ignore. Default is an empty list.
         :type ignored_files: List[str]
         :return: A list of Document objects after splitting them into smaller chunks.
@@ -150,13 +144,13 @@ class Ingestor:
 
     def does_vectorstore_exist(self) -> bool:
         """
-    	Check if the vectorstore exists by verifying the existence of the index file and
-    	the collections and embeddings parquet files.
-    	
-    	:param self: An instance of the class.
-    	
-    	:return: A boolean indicating whether the vectorstore exists or not.
-    	"""
+        Check if the vectorstore exists by verifying the existence of the index file and
+        the collections and embeddings parquet files.
+
+        :param self: An instance of the class.
+
+        :return: A boolean indicating whether the vectorstore exists or not.
+        """
         index_path = os.path.join(self.db, "index")
         if os.path.exists(index_path):
             collections_path = os.path.join(self.db, "chroma-collections.parquet")
@@ -175,6 +169,7 @@ class Ingestor:
         Ingests documents to create embeddings and store them locally in a vectorstore using Chroma. If the vectorstore
         already exists, updates and appends to it. If it doesn't exist, creates a new vectorstore. Prints progress
         messages to the console.
+        
         Parameters:
         None
         Returns:

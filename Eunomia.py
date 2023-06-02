@@ -22,11 +22,12 @@ class Eunomia:
         self.cwd = self.get_cwd()
         self.db = f"{self.cwd}\{os.environ.get('PERSIST_DIRECTORY')}".strip()
         self.llm = os.environ.get("LLM")
+        self.backend = os.environ.get("BACKEND")
         self.embeddings_model = os.environ.get("EMBEDDINGS_MODEL")
         self.ignore_folders = json.loads(os.environ.get("IGNORE_FOLDERS"))
 
         self.model_n_ctx = int(os.environ.get("MODEL_N_CTX"))
-        self.target_chunks = int(os.environ.get("TARGET_SOURCE_CHUNKS"), 4)
+        self.target_chunks = int(os.environ.get("TARGET_SOURCE_CHUNKS"))
 
     def get_cwd(self) -> str:
         current_working_dir = os.getcwd()
@@ -60,16 +61,16 @@ class Eunomia:
         - None
         """
         embeddings = HuggingFaceEmbeddings(model_name=self.embeddings_model)
-        db = Chroma(
+        chroma = Chroma(
             persist_directory=self.db,
             embedding_function=embeddings,
             client_settings=CHROMA_SETTINGS,
         )
-        retriever = db.as_retriever(search_kwargs={"k": self.target_chunks})
+        retriever = chroma.as_retriever(search_kwargs={"k": self.target_chunks})
         llm = GPT4All(
             model=self.llm,
             n_ctx=self.model_n_ctx,
-            backend="gptj",
+            backend=self.backend,
             callbacks=[StreamingStdOutCallbackHandler()],
             verbose=False,
         )
@@ -79,22 +80,22 @@ class Eunomia:
         chat_history = []
 
         print(
-        r"""
+            r"""
      ______   __  __   __   __   ______   __    __   __   ______    
     /\  ___\ /\ \/\ \ /\ "-.\ \ /\  __ \ /\ "-./  \ /\ \ /\  __ \   
     \ \  __\ \ \ \_\ \\ \ \-.  \\ \ \/\ \\ \ \-./\ \\ \ \\ \  __ \  
      \ \_____\\ \_____\\ \_\\"\_\\ \_____\\ \_\ \ \_\\ \_\\ \_\ \_\ 
       \/_____/ \/_____/ \/_/ \/_/ \/_____/ \/_/  \/_/ \/_/ \/_/\/_/ 
-        """
+            """
         )
 
         while True:
-            question = input("\nEnter a query: ")
-            if question == "quit" or question == "q":
+            query = input("\nEnter a query: ")
+            if query in ["quit", "q"]:
                 break
 
-            res = qa({"question": question, "chat_history": chat_history})
-            chat_history.append((question, res["answer"]))
+            response = qa({"question": query, "chat_history": chat_history})
+            chat_history.append((query, response["answer"]))
 
 
 if __name__ == "__main__":
