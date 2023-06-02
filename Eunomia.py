@@ -18,7 +18,7 @@ load_dotenv()
 
 
 class Eunomia:
-    def __init__(self):
+    def __init__(self) -> None:
         self.cwd = self.get_cwd()
         self.db = f"{self.cwd}\{os.environ.get('PERSIST_DIRECTORY')}".strip()
         self.llm = os.environ.get("LLM")
@@ -28,18 +28,37 @@ class Eunomia:
         self.model_n_ctx = int(os.environ.get("MODEL_N_CTX"))
         self.target_chunks = int(os.environ.get("TARGET_SOURCE_CHUNKS"))
 
-    def get_cwd(self):
+    def get_cwd(self) -> str:
         current_working_dir = os.getcwd()
         return current_working_dir
 
-    def ingest(self):
+    def ingest(self) -> None:
+        """
+        Initialize an Ingestor instance and creates the vectostore database.
+
+        :return: None
+        """
         ingestor = Ingestor(
             self.cwd, self.db, self.embeddings_model, self.ignore_folders
         )
 
         ingestor.ingest()
 
-    def start(self):
+    def start(self) -> None:
+        """
+        Initializes the necessary components for the chatbot to start. This function uses the following components:
+
+        - HuggingFace embeddings for NLP processing using the specified `model_name`
+        - Chroma for retrieving and storing the embeddings
+        - GPT4All language model for conversational responses
+        - Conversational retrieval chain for generating responses
+
+        Parameters:
+        - self: The instance of the Chatbot class.
+
+        Returns:
+        - None
+        """
         embeddings = HuggingFaceEmbeddings(model_name=self.embeddings_model)
         db = Chroma(
             persist_directory=self.db,
@@ -59,7 +78,7 @@ class Eunomia:
         chat_history = []
 
         print(
-        r"""
+            r"""
      ______   __  __   __   __   ______   __    __   __   ______    
     /\  ___\ /\ \/\ \ /\ "-.\ \ /\  __ \ /\ "-./  \ /\ \ /\  __ \   
     \ \  __\ \ \ \_\ \\ \ \-.  \\ \ \/\ \\ \ \-./\ \\ \ \\ \  __ \  
