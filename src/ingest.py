@@ -8,15 +8,10 @@ from tqdm import tqdm
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 
 from langchain.document_loaders import (
-    CSVLoader,
-    PDFMinerLoader,
     TextLoader,
     PythonLoader,
-    NotebookLoader,
-    UnstructuredEPubLoader,
     UnstructuredHTMLLoader,
     UnstructuredMarkdownLoader,
-    UnstructuredWordDocumentLoader,
 )
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter, Language
@@ -27,21 +22,23 @@ from src.constants import CHROMA_SETTINGS
 
 # Map file extensions to document loaders and their arguments
 LOADER_MAPPING = {
-    ".csv": (CSVLoader, {}),
-    ".doc": (UnstructuredWordDocumentLoader, {}),
-    ".docx": (UnstructuredWordDocumentLoader, {}),
-    ".epub": (UnstructuredEPubLoader, {}),
+    ".py": (PythonLoader, {}),
     ".html": (UnstructuredHTMLLoader, {}),
     ".md": (UnstructuredMarkdownLoader, {}),
-    ".pdf": (PDFMinerLoader, {}),
-    ".ipynb": (NotebookLoader, {}),
-    ".py": (PythonLoader, {}),
-    ".txt": (TextLoader, {"encoding": "utf8"}),
     ".cpp": (TextLoader, {"encoding": "utf8"}),
     ".hpp": (TextLoader, {"encoding": "utf8"}),
-    ".css": (TextLoader, {"encoding": "utf8"}),
+    ".js": (TextLoader, {"encoding": "utf8"}),
+    ".rb": (TextLoader, {"encoding": "utf8"}),
+    ".rs": (TextLoader, {"encoding": "utf8"}),
+    ".java": (TextLoader, {"encoding": "utf8"}),
+    ".jar": (TextLoader, {"encoding": "utf8"}),
+    ".go": (TextLoader, {"encoding": "utf8"}),
+    ".scala": (TextLoader, {"encoding": "utf8"}),
+    ".sc": (TextLoader, {"encoding": "utf8"}),
+    ".swift": (TextLoader, {"encoding": "utf8"}),
 }
 
+# Map supported file extensions to langchain's Language dataclass
 LANG_MAPPINGS = {
     "py": Language.PYTHON,
     "cpp": Language.CPP,
@@ -50,7 +47,13 @@ LANG_MAPPINGS = {
     "html": Language.HTML,
     "md": Language.MARKDOWN,
     "rb": Language.RUBY,
-    "rst": Language.RUST,
+    "rs": Language.RUST,
+    "java": Language.JAVA,
+    "jar": Language.JAVA,
+    "go": Language.GO,
+    "scala": Language.SCALA,
+    "sc": Language.SCALA,
+    "swift": Language.SWIFT,
 }
 
 
@@ -69,6 +72,14 @@ class Ingestor:
         self.threshold = 5242880  # 5 MB in bytes
 
     def load_single_document(self, file_path: str) -> Document:
+        """
+        Loads a single document from a file path using a loader based on the file extension.
+        :param file_path: A string representing the path to the file to be loaded.
+        :type file_path: str
+        :return: A Document object representing the loaded document.
+        :rtype: Document
+        :raises ValueError: If the file extension is not supported.
+        """
         ext = "." + file_path.rsplit(".", 1)[-1]
         if ext in LOADER_MAPPING:
             loader_class, loader_args = LOADER_MAPPING[ext]
@@ -78,6 +89,14 @@ class Ingestor:
         raise ValueError(f"Unsupported file extension '{ext}'")
 
     def load_documents(self) -> List[Document]:
+        """
+        Loads documents from files in the cwd directory and its subdirectories.
+        Excludes files in specified ignore folders and only loads files that are above
+        a specified file size threshold. Uses multi-processing if file size is above the
+        threshold and multi-threading otherwise.
+        Returns:
+            A list of loaded documents.
+        """
         all_files = []
         for ext in LOADER_MAPPING:
             all_files.extend(
@@ -110,18 +129,31 @@ class Ingestor:
 
         return results
 
-    def split_docs(
-        self, docs_list: List[Document], language: str = ""
-    ) -> List[Document]:
+    def split_docs(self, docs_list: List[Document], language: str) -> List[Document]:
+        """
+        Splits a list of documents into smaller chunks using the RecursiveCharacterTextSplitter
+        object. The function takes a list of Document objects and a language string as
+        parameters. The function returns a List of Document objects.
+        :param docs_list: The list of Document objects to be split.
+        :type docs_list: List[Document]
+        :param language: The language string to be used by the RecursiveCharacterTextSplitter
+                        object.
+        :type language: str
+        :return: A List of Document objects.
+        :rtype: List[Document]
+        """
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
-        if language != "":
-            text_splitter.from_language(language)
+        text_splitter.from_language(language)
         texts = text_splitter.split_documents(docs_list)
         return texts
 
     def process_documents(self, ignored_files: List[str] = []) -> List[Document]:
         """
-        Load documents and split in chunks
+        Process documents and split them into smaller chunks of text.
+        :param ignored_files: A list of files to ignore. Default is an empty list.
+        :type ignored_files: List[str]
+        :return: A list of Document objects after splitting them into smaller chunks.
+        :rtype: List[Document]
         """
         doc_dict = {}
         print(f"Loading documents from {self.cwd}")
@@ -152,7 +184,7 @@ class Ingestor:
 
     def does_vectorstore_exist(self) -> bool:
         """
-        Checks if vectorstore exists.
+        Checks if the vector database exists.
         """
         index_path = os.path.join(self.db, "index")
         if os.path.exists(index_path):
@@ -167,7 +199,16 @@ class Ingestor:
                     return True
         return False
 
-    def ingest(self):
+    def ingest(self) -> None:
+        """
+        Ingests documents to create embeddings and store them locally in a vectorstore using Chroma. If the vectorstore
+        already exists, updates and appends to it. If it doesn't exist, creates a new vectorstore. Prints progress
+        messages to the console.
+        Parameters:
+        None
+        Returns:
+        None
+        """
         # Create embeddings
         embeddings = HuggingFaceEmbeddings(model_name=self.emb_model)
 
