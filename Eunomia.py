@@ -26,7 +26,7 @@ class Eunomia:
         self.ignore_folders = json.loads(os.environ.get("IGNORE_FOLDERS"))
 
         self.model_n_ctx = int(os.environ.get("MODEL_N_CTX"))
-        self.target_chunks = int(os.environ.get("TARGET_SOURCE_CHUNKS"))
+        self.target_chunks = int(os.environ.get("TARGET_SOURCE_CHUNKS"), 4)
 
     def get_cwd(self) -> str:
         current_working_dir = os.getcwd()
@@ -34,7 +34,7 @@ class Eunomia:
 
     def ingest(self) -> None:
         """
-        Initialize an Ingestor instance and creates the vectostore database.
+        Initialize an Ingestor instance and creates/updates the vectostore.
 
         :return: None
         """
@@ -46,7 +46,7 @@ class Eunomia:
 
     def start(self) -> None:
         """
-        Initializes the necessary components for the chatbot to start. This function uses the following components:
+        Initializes the necessary components for the LLM to start. This function uses the following components:
 
         - HuggingFace embeddings for NLP processing using the specified `model_name`
         - Chroma for retrieving and storing the embeddings
@@ -54,7 +54,7 @@ class Eunomia:
         - Conversational retrieval chain for generating responses
 
         Parameters:
-        - self: The instance of the Chatbot class.
+        - self: The instance of the LLM class.
 
         Returns:
         - None
@@ -71,6 +71,7 @@ class Eunomia:
             n_ctx=self.model_n_ctx,
             backend="gptj",
             callbacks=[StreamingStdOutCallbackHandler()],
+            verbose=False,
         )
 
         qa = ConversationalRetrievalChain.from_llm(llm, retriever=retriever)
@@ -78,7 +79,7 @@ class Eunomia:
         chat_history = []
 
         print(
-            r"""
+        r"""
      ______   __  __   __   __   ______   __    __   __   ______    
     /\  ___\ /\ \/\ \ /\ "-.\ \ /\  __ \ /\ "-./  \ /\ \ /\  __ \   
     \ \  __\ \ \ \_\ \\ \ \-.  \\ \ \/\ \\ \ \-./\ \\ \ \\ \  __ \  
