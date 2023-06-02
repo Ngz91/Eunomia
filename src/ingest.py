@@ -17,7 +17,7 @@ from langchain.document_loaders import (
     UnstructuredWordDocumentLoader,
 )
 
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.text_splitter import RecursiveCharacterTextSplitter, Language
 from langchain.vectorstores import Chroma
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.docstore.document import Document
@@ -38,6 +38,17 @@ LOADER_MAPPING = {
     ".cpp": (TextLoader, {"encoding": "utf8"}),
     ".hpp": (TextLoader, {"encoding": "utf8"}),
     ".css": (TextLoader, {"encoding": "utf8"}),
+}
+
+LANG_MAPPINGS = {
+    "py": Language.PYTHON,
+    "cpp": Language.CPP,
+    "hpp": Language.CPP,
+    "js": Language.JS,
+    "html": Language.HTML,
+    "md": Language.MARKDOWN,
+    "rb": Language.RUBY,
+    "rst": Language.RUST,
 }
 
 
@@ -97,24 +108,39 @@ class Ingestor:
 
         return results
 
+    def split_docs(
+        self, docs_list: List[Document], language: str = ""
+    ) -> List[Document]:
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
+        if language != "":
+            text_splitter.from_language(language)
+        texts = text_splitter.split_documents(docs_list)
+        return texts
+
     def process_documents(self, ignored_files: List[str] = []) -> List[Document]:
         """
         Load documents and split in chunks
         """
+        doc_dict = {}
         print(f"Loading documents from {self.cwd}")
         documents = self.load_documents()
         if not documents:
             print("No new documents to load")
             exit(0)
         print(f"Loaded {len(documents)} new documents from {self.cwd}")
-        text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=self.chunk_size, chunk_overlap=self.chunk_overlap
-        )
-        texts = text_splitter.split_documents(documents)
+        for doc in documents:
+            ext = doc.metadata["source"].split(".")[-1]
+            if ext not in doc_dict:
+                doc_dict[ext] = []
+            doc_dict[ext].append(doc)
+        all_docs = []
+        for ext, docs in doc_dict.items():
+            split_docs = self.split_docs(docs, language=LANG_MAPPINGS[ext])
+            all_docs.extend(split_docs)
         print(
-            f"Split into {len(texts)} chunks of text (max. {self.chunk_size} tokens each)"
+            f"Split into {len(all_docs)} chunks of text (max. {self.chunk_size} tokens each)"
         )
-        return texts
+        return all_docs
 
     def does_vectorstore_exist(self) -> bool:
         """
@@ -165,4 +191,6 @@ class Ingestor:
         db.persist()
         db = None
 
-        print(f"Ingestion complete, you can now run 'eunomia start' to use the LLM to interact with your code!")
+        print(
+            f"Ingestion complete, you can now run 'eunomia start' to use the LLM to interact with your code!"
+        )
