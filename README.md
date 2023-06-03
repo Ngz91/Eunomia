@@ -1,5 +1,20 @@
-# Eunomia
-Analyze your code locally using a LLM. No data shared and no internet connection required after downloading all the necessary files. Eunomia is based on the imartinez original [privateGPT](https://github.com/imartinez/privateGPT) project. Eunomia limits itself to only analyse the source code files provided and give you an answer based on your question.
+<div align="center">
+    <h1>Eunomia</h1>
+    <h3>Analyze your code locally</h3>
+</div>
+
+<div align="center">
+
+![](https://img.shields.io/github/last-commit/Ngz91/Eunomia?&style=for-the-badge&color=C9CBFF&logoColor=D9E0EE&labelColor=3D426B)
+![](https://img.shields.io/github/stars/Ngz91/Eunomia?style=for-the-badge&logo=starship&color=8bd5ca&logoColor=D9E0EE&labelColor=3D426B)
+[![](https://img.shields.io/github/repo-size/Ngz91/Eunomia?color=%23DDB6F2&label=SIZE&logo=codesandbox&style=for-the-badge&logoColor=D9E0EE&labelColor=3D426B)](https://github.com/Ngz91/Eunomia)
+<a href="https://github.com/Ngz91/dotfiles/issues">
+<img alt="Issues" src="https://img.shields.io/github/issues/Ngz91/dotfiles?style=for-the-badge&logo=bilibili&color=F5E0DC&logoColor=D9E0EE&labelColor=3D426B" />
+</a>
+     
+</div>
+
+Analyze your code locally using a LLM. No data shared and no internet connection required after downloading all the necessary files. Eunomia is based on the imartinez original [privateGPT](https://github.com/imartinez/privateGPT) project. Eunomia limits itself to only analyze the source code files provided and give you an answer based on your question.
 
 # Preview
 ![](https://raw.githubusercontent.com/Ngz91/Eunomia/master/images/Eunomia_img1.png)
@@ -35,7 +50,7 @@ TARGET_SOURCE_CHUNKS: The amount of chunks (sources) that will be used to answer
 IGNORE_FOLDERS: List of folders to ignore
 ```
 
-<b>IMPORTANT:</b> There are two ways to run the script, one is `python path/to/Eunomia.py arg1` and the other is by creating a batch script and place it inside your Python Scripts folder (In Windows it is located under User\AppDAta\Local\Progams\Python\Pythonxxx\Scripts) and running `eunomia arg1` directly. By the nature of how Eunomia works, it's recommended that you create a batch script and run it inside the folder where you want the code to be analysed. I will use the batch script as an example from now on.
+<b>IMPORTANT:</b> There are two ways to run the script, one is `python path/to/Eunomia.py arg1` and the other is by creating a batch script and place it inside your Python Scripts folder (In Windows it is located under User\AppDAta\Local\Progams\Python\Pythonxxx\Scripts) and running `eunomia arg1` directly. By the nature of how Eunomia works, it's recommended that you create a batch script and run it inside the folder where you want the code to be analyzed. I will use the batch script as an example from now on.
 
 Activate your Python environment (if you created one), move to the folder where your code is and ingest the files to create the vectorstore that the selected LLM will use as context for your answering questions by running:
 ```
