@@ -47,10 +47,10 @@ The first time you run the script it will require internet connection to downloa
 You will see something like this:
 ```
 Creating new vectorstore
-Loading documents from D:\Projects\tests
-Loading new documents: 1it [00:00, ?it/s]
-Loaded 1 new documents from D:\Projects\tests
-Split into 7 chunks of text (max. 1000 tokens each)
+Loading documents from D:\SomeTest
+Loading new documents: 100%|██████████████████████████████| 7/7 [00:00<?, ?it/s]
+Loaded 7 new documents from D:\Projects\tests
+Split into 14 chunks of text (max. 1000 tokens each)
 Creating embeddings. May take some minutes...
 Vectorstore created, you can now run 'eunomia start' to use the LLM to interact with your code!
 ```
