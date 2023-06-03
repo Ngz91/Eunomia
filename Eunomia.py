@@ -8,7 +8,6 @@ from langchain.vectorstores import Chroma
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.llms import GPT4All
 from langchain.chains import ConversationalRetrievalChain
-from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 
 from src.ingest import Ingestor
 
@@ -40,7 +39,10 @@ class Eunomia:
         :return: None
         """
         ingestor = Ingestor(
-            self.cwd, self.db, self.embeddings_model, self.ignore_folders
+            self.cwd,
+            self.db,
+            self.embeddings_model,
+            self.ignore_folders,
         )
 
         ingestor.ingest()
@@ -71,7 +73,6 @@ class Eunomia:
             model=self.llm,
             n_ctx=self.model_n_ctx,
             backend=self.backend,
-            callbacks=[StreamingStdOutCallbackHandler()],
             verbose=False,
         )
 
