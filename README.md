@@ -1,5 +1,5 @@
 # Eunomia
-Analyze your code locally using a LLM. No data shared and no internet connection required after downloading the necessary files. Eunomia is based on the imartinez original [privateGPT](https://github.com/imartinez/privateGPT) project. Eunomia limits itself to only analyse the code documents provided and give you an answer based on your question.
+Analyze your code locally using a LLM. No data shared and no internet connection required after downloading all the necessary files. Eunomia is based on the imartinez original [privateGPT](https://github.com/imartinez/privateGPT) project. Eunomia limits itself to only analyse the source code files provided and give you an answer based on your question.
 
 # Preview
 ![](https://raw.githubusercontent.com/Ngz91/Eunomia/master/images/Eunomia_img1.png)
@@ -86,7 +86,7 @@ gptj_model_load: model size =  3609.38 MB / num tensors = 285
 Enter a query:
 ```
 
-<b>Note:</b> In case there are errors when loading the LLM, be sure that you are using the correct backend for the LLM you are using.
+<b>Note:</b> In case there are errors when loading the LLM, be sure that you are using the correct backend for the LLM you are using. Also, some answers might be incomplete or wrong, testing I have found that this can be improved by trying different chunk sizes, chunk overlap, n_ctx and target_source_chunks. You can use other models to test if their response is better than the ones tested so far, remember to search how you can use those models in langchain and their respective backends.
 
 # System Requirements
 
@@ -110,6 +110,12 @@ To install a C++ compiler on Windows 10/11, follow these steps:
 When running a Mac with Intel hardware (not M1), you may run into _clang: error: the clang compiler does not support '-march=native'_ during pip install.
 
 If so set your archflags during pip install. eg: _ARCHFLAGS="-arch x86_64" pip3 install -r requirements.txt_
+
+# Some sources
+- Langchain's [Documentation](https://python.langchain.com/en/latest/index.html)
+- Langchain's [CodeTextSpliter](https://python.langchain.com/en/latest/modules/indexes/text_splitters/examples/code_splitter.html)
+- Use LangChain, GPT and Deep Lake to work with code base [article](https://python.langchain.com/en/latest/use_cases/code/code-analysis-deeplake.html) 
+- privateGPT [Repo](https://github.com/imartinez/privateGPT)
 
 # Disclaimer
 This is a test project to validate the feasibility of a fully private solution for question answering using LLMs and Vector embeddings. It is not production ready, and it is not meant to be used in production. The models selection is not optimized for performance, but for privacy; but it is possible to use different models and vectorstores to improve performance.
