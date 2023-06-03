@@ -1,6 +1,6 @@
 <div align="center">
-    <h1>Eunomia</h1>
-    <h3>Analyze your code locally</h3>
+    <h1>🏯 Eunomia 🏯</h1>
+    <h3>🔐 Analyze your code locally 🔐</h3>
 </div>
 
 <div align="center">
