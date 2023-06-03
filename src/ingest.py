@@ -17,15 +17,19 @@ from src.constants import CHROMA_SETTINGS, LOADER_MAPPING, LANG_MAPPINGS
 
 class Ingestor:
     def __init__(
-        self, cwd: str, db: str, emb_model: str, ignore_folders: List[str]
+        self,
+        cwd: str,
+        db: str,
+        emb_model: str,
+        ignore_folders: List[str],
     ) -> None:
         self.cwd = cwd
         self.db = db
         self.emb_model = emb_model
         self.ignore_folders = ignore_folders
 
-        self.chunk_size = 1000
-        self.chunk_overlap = 4
+        self.chunk_size = 60
+        self.chunk_overlap = 2
 
         self.threshold = 5242880  # 5 MB in bytes
 
@@ -109,10 +113,11 @@ class Ingestor:
         :return: A List of Document objects.
         :rtype: List[Document]
         """
-        text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=self.chunk_size, chunk_overlap=self.chunk_overlap
+        text_splitter = RecursiveCharacterTextSplitter.from_language(
+            chunk_size=self.chunk_size,
+            chunk_overlap=self.chunk_overlap,
+            language=language,
         )
-        text_splitter.from_language(language)
         texts = text_splitter.split_documents(docs_list)
         return texts
 
