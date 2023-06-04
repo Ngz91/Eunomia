@@ -8,6 +8,7 @@ from langchain.vectorstores import Chroma
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.llms import GPT4All
 from langchain.chains import ConversationalRetrievalChain
+from langchain.callbacks import StdOutCallbackHandler
 
 from src.ingest import Ingestor
 
@@ -73,7 +74,9 @@ class Eunomia:
             model=self.llm,
             n_ctx=self.model_n_ctx,
             backend=self.backend,
-            verbose=False,
+            verbose=True,
+            callbacks=[StdOutCallbackHandler()],
+            n_threads=8, # Change this according to your cpu threads
         )
 
         qa = ConversationalRetrievalChain.from_llm(llm, retriever=retriever)
