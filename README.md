@@ -1,6 +1,6 @@
 <div align="center">
     <h1>🏯 Eunomia 🏯</h1>
-    <h3>🔐 Analyze your code locally 🔐</h3>
+    <h3>🔐 Query & analyze your code locally using a GPT model🔐</h3>
 </div>
 
 <div align="center">
@@ -14,7 +14,7 @@
      
 </div>
 
-Analyze your code locally using a LLM. No data shared and no internet connection required after downloading all the necessary files. Eunomia is based on the imartinez original [privateGPT](https://github.com/imartinez/privateGPT) project. Eunomia limits itself to only analyze the source code files provided and give you an answer based on your question.
+Analyze your code locally using a GPT4All LLM. No data shared and no internet connection required after downloading all the necessary files. Eunomia is based on the imartinez original [privateGPT](https://github.com/imartinez/privateGPT) project. Eunomia limits itself to only analyze the source code files provided and give you an answer based on your query.
 
 # Preview
 ![](https://raw.githubusercontent.com/Ngz91/Eunomia/master/images/Eunomia_img1.png)
@@ -50,7 +50,7 @@ TARGET_SOURCE_CHUNKS: The amount of chunks (sources) that will be used to answer
 IGNORE_FOLDERS: List of folders to ignore
 ```
 
-<b>IMPORTANT:</b> There are two ways to run the script, one is `python path/to/Eunomia.py arg1` and the other is by creating a batch script and place it inside your Python Scripts folder (In Windows it is located under User\AppDAta\Local\Progams\Python\Pythonxxx\Scripts) and running `eunomia arg1` directly. By the nature of how Eunomia works, it's recommended that you create a batch script and run it inside the folder where you want the code to be analyzed. I will use the batch script as an example from now on.
+<b>IMPORTANT:</b> There are two ways to run Eunomia, one is by using `python path/to/Eunomia.py arg1` and the other is by creating a batch script and place it inside your Python Scripts folder (In Windows it is located under User\AppDAta\Local\Progams\Python\Pythonxxx\Scripts) and running `eunomia arg1` directly. By the nature of how Eunomia works, it's recommended that you create a batch script and run it inside the folder where you want the code to be analyzed. I will use the batch script as an example from now on.
 
 Activate your Python environment (if you created one), move to the folder where your code is and ingest the files to create the vectorstore that the selected LLM will use as context for your answering questions by running:
 ```
@@ -59,10 +59,10 @@ eunomia ingest
 
 The first time you run the script it will require internet connection to download the embeddings model itself. You will not need any internet connection when you run the ingest again.
 
-You will see something like this:
+You will see something like this if everything went correctly:
 ```
 Creating new vectorstore
-Loading documents from D:\SomeTest
+Loading documents from D:\Folder\SomeTest
 Loading new documents: 100%|██████████████████████████████| 7/7 [00:00<?, ?it/s]
 Loaded 7 new documents from D:\Projects\tests
 Split into 14 chunks of text (max. 1000 tokens each)
@@ -75,7 +75,7 @@ Once the vectorstore is created you can start eunomia by running (The first time
 eunomia start
 ```
 
-You will be greeted with this if everything went correctly
+You will be greeted with this promp if the model was loaded successfully:
 ```
 Found model file.
 gptj_model_load: loading model from 'models\\ggml-gpt4all-j-v1.3-groovy.bin' - please wait ...
@@ -101,7 +101,7 @@ gptj_model_load: model size =  3609.38 MB / num tensors = 285
 Enter a query:
 ```
 
-<b>Note:</b> In case there are errors when loading the LLM, be sure that you are using the correct backend for the LLM you are using. Also, some answers might be incomplete or wrong, testing I have found that this can be improved by trying different chunk sizes, chunk overlap, n_ctx and target_source_chunks. You can use other models to test if their response is better than the ones tested so far, remember to search how you can use those models in langchain and their respective backends.
+<b>Note:</b> In case you encounter errors when loading the LLM, be sure that you are using the correct backend for the LLM you are using. Also, some answers might be incomplete or wrong, testing I have found that this can be improved by trying different chunk sizes, chunk overlap, n_ctx and target_source_chunks. You can use other models to test if their response is better than the ones tested so far, remember to search how you can use those models in langchain and their respective backends.
 
 # System Requirements
 
