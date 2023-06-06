@@ -69,14 +69,21 @@ class Eunomia:
             embedding_function=embeddings,
             client_settings=CHROMA_SETTINGS,
         )
-        retriever = chroma.as_retriever(search_kwargs={"k": self.target_chunks})
+        retriever = chroma.as_retriever(
+            search_kwargs={
+                "k": self.target_chunks,
+                "fetch_k": 20,
+                "maximal_marginal_relevance": True,
+            }
+        )
         llm = GPT4All(
             model=self.llm,
             n_ctx=self.model_n_ctx,
             backend=self.backend,
             verbose=True,
             callbacks=[StdOutCallbackHandler()],
-            n_threads=8, # Change this according to your cpu threads
+            n_threads=8,  # Change this according to your cpu threads
+            temp=0.5,
         )
 
         qa = ConversationalRetrievalChain.from_llm(llm, retriever=retriever)
