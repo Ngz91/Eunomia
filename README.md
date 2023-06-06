@@ -24,6 +24,7 @@ Analyze your code locally using a GPT4All LLM. No data shared and no internet co
 | LLM | Download | Backend | Size
 ------|------|------|------
 | 🦙 ggml-gpt4all-l13b-snoozy.bin | [Download](https://gpt4all.io/models/ggml-gpt4all-l13b-snoozy.bin) | llama | 8.0 GB
+| 🖼️ ggml-nous-gpt4-vicuna-13b.bin | [Download](https://gpt4all.io/models/ggml-nous-gpt4-vicuna-13b.bin) | llama | 8.0 GB
 | 🤖 ggml-gpt4all-j-v1.3-groovy.bin | [Download](https://gpt4all.io/models/ggml-gpt4all-j-v1.3-groovy.bin) | gptj | 3.7 GB
 
 # How to use
