@@ -51,7 +51,7 @@ TARGET_SOURCE_CHUNKS: The amount of chunks (sources) that will be used to answer
 IGNORE_FOLDERS: List of folders to ignore
 ```
 
-<b>IMPORTANT:</b> There are two ways to run Eunomia, one is by using `python path/to/Eunomia.py arg1` and the other is by creating a batch script and place it inside your Python Scripts folder (In Windows it is located under User\AppDAta\Local\Progams\Python\Pythonxxx\Scripts) and running `eunomia arg1` directly. By the nature of how Eunomia works, it's recommended that you create a batch script and run it inside the folder where you want the code to be analyzed. I will use the batch script as an example from now on.
+<b>IMPORTANT:</b> There are two ways to run Eunomia, one is by using `python path/to/Eunomia.py arg1` and the other is by creating a batch script and place it inside your Python Scripts folder (In Windows it is located under User\AppDAta\Local\Progams\Python\Pythonxxx\Scripts) and running `eunomia arg1` directly. By the nature of how Eunomia works, it's recommended that you create a batch script and run it inside the folder where you want the code to be analyzed. You can use the `example.bat` file as an example for setting your batch file yourself, remember to edit the path `python path\to\Eunomia.py %1` to point to the path where Eunomia.py is located in your machine. I will use the batch script as an example from now on.
 
 Activate your Python environment (if you created one), move to the folder where your code is and ingest the files to create the vectorstore that the selected LLM will use as context for your answering questions by running:
 ```
