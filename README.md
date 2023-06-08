@@ -17,7 +17,11 @@
 Analyze your code locally using a GPT4All LLM. No data shared and no internet connection required after downloading all the necessary files. Eunomia is based on the imartinez original [privateGPT](https://github.com/imartinez/privateGPT) project. Eunomia limits itself to only analyze the source code files provided and give you an answer based on your query.
 
 # Preview
+<b>With a new Django project</b>
 ![](https://raw.githubusercontent.com/Ngz91/Eunomia/master/images/Eunomia_img1.png)
+<br><br>
+<b>With a C++ Project</b>
+![](https://raw.githubusercontent.com/Ngz91/Eunomia/master/images/Eunomia_img2.png)
 
 # Models Tested (GPT4All)
 
