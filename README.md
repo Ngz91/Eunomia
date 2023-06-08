@@ -27,6 +27,19 @@ Analyze your code locally using a GPT4All LLM. No data shared and no internet co
 | 🖼️ ggml-nous-gpt4-vicuna-13b.bin | [Download](https://gpt4all.io/models/ggml-nous-gpt4-vicuna-13b.bin) | llama | 8.0 GB
 | 🤖 ggml-gpt4all-j-v1.3-groovy.bin | [Download](https://gpt4all.io/models/ggml-gpt4all-j-v1.3-groovy.bin) | gptj | 3.7 GB
 
+# Languages supported
+| Lang | Extension |
+------|------
+| Python | .py
+| C++ | .cpp & .hpp
+| Java | .java & .jar
+| JS | .js
+| Ruby | .rb
+| Rust | .rs
+| GO | .go
+| Scala | .scala & .sc
+| Swift | .swift
+
 # How to use
 
 Eunomia uses Chroma to create a vectorstore with the files in the directory where is run and then uses langchain to feed the vectorstore to the LLM of your choice. As of now, only GPT4All models are supported since I have no access to ChatGPT.
@@ -127,7 +140,7 @@ When running a Mac with Intel hardware (not M1), you may run into _clang: error:
 
 If so set your archflags during pip install. eg: _ARCHFLAGS="-arch x86_64" pip3 install -r requirements.txt_
 
-# Some sources
+# Some resources
 - Langchain's [Documentation](https://python.langchain.com/en/latest/index.html)
 - Langchain's [CodeTextSpliter](https://python.langchain.com/en/latest/modules/indexes/text_splitters/examples/code_splitter.html)
 - Use LangChain, GPT and Deep Lake to work with code base [article](https://python.langchain.com/en/latest/use_cases/code/code-analysis-deeplake.html) 
