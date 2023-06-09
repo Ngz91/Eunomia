@@ -44,6 +44,8 @@ Analyze your code locally using a GPT4All LLM. No data shared and no internet co
 | Scala | .scala & .sc
 | Swift | .swift
 
+Here you can find the source code of the Langchain's [Language Enum](https://github.com/hwchase17/langchain/blob/master/langchain/text_splitter.py) with the all the languages that are currently supported by Langchain.
+
 # How to use
 
 Eunomia uses Chroma to create a vectorstore with the files in the directory where is run and then uses langchain to feed the vectorstore to the LLM of your choice. As of now, only GPT4All models are supported since I have no access to ChatGPT.
