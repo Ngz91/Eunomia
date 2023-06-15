@@ -39,6 +39,8 @@ LOADER_MAPPING = {
     ".scala": (TextLoader, {"encoding": "utf8"}),
     ".sc": (TextLoader, {"encoding": "utf8"}),
     ".swift": (TextLoader, {"encoding": "utf8"}),
+    ".php": (TextLoader, {"encoding": "utf8"}),
+    ".tex": (TextLoader, {"encoding": "utf8"}),
 }
 
 # Map supported file extensions to langchain's Language dataclass
@@ -57,4 +59,6 @@ LANG_MAPPINGS = {
     "scala": Language.SCALA,
     "sc": Language.SCALA,
     "swift": Language.SWIFT,
+    "php": Language.PHP,
+    "latex": Language.LATEX,
 }
