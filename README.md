@@ -72,14 +72,14 @@ TARGET_SOURCE_CHUNKS: The amount of chunks (sources) that will be used to answer
 IGNORE_FOLDERS: List of folders to ignore
 ```
 
-<b>IMPORTANT:</b> There are two ways to run Eunomia, one is by using `python path/to/Eunomia.py arg1` and the other is by creating a batch script and place it inside your Python Scripts folder (In Windows it is located under User\AppDAta\Local\Progams\Python\Pythonxxx\Scripts) and running `eunomia arg1` directly. By the nature of how Eunomia works, it's recommended that you create a batch script and run it inside the folder where you want the code to be analyzed. You can use the `example.bat` file as an example for setting your batch file yourself, remember to edit the path `python path\to\Eunomia.py %1` to point to the path where Eunomia.py is located in your machine. I will use the batch script as an example from now on.
+<b>IMPORTANT:</b> There are two ways to run Eunomia, one is by using `python path/to/Eunomia.py arg1` and the other is by creating a batch script and place it inside your Python Scripts folder (In Windows it is located under User\AppDAta\Local\Progams\Python\Pythonxxx\Scripts) and running `eunomia arg1` directly. By the nature of how Eunomia works, it's recommended that you create a batch script and run it inside the folder where you want the code to be analyzed. You can use the `example.bat` file as an example for setting your batch file yourself but remember to edit the paths `python path\to\Eunomia.py %1` to point to the path where Eunomia.py is located in your machine. I will use the batch script as an example from now on.
 
-Activate your Python environment (if you created one), move to the folder where your code is and ingest the files to create the vectorstore that the selected LLM will use as context for your answering questions by running:
+Activate your Python environment (if you created one), move to the folder where your code is and ingest the files to create the vectorstore that the selected LLM will use as context for answering your questions by running:
 ```
 eunomia ingest
 ```
 
-The first time you run the script it will require internet connection to download the embeddings model itself. You will not need any internet connection when you run the ingest again.
+The first time you run the script it will require internet connection to download the embeddings model itself. You will not need any internet connection when you run ingest again.
 
 You will see something like this if everything went correctly:
 ```
@@ -92,12 +92,12 @@ Creating embeddings. May take some minutes...
 Vectorstore created, you can now run 'eunomia start' to use the LLM to interact with your code!
 ```
 
-Once the vectorstore is created you can start eunomia by running (The first time it will take some seconds):
+Once the vectorstore is created you can start Eunomia by running:
 ```
 eunomia start
 ```
 
-You will be greeted with this promp if the model was loaded successfully:
+The first time it'll take some seconds. Once it finishes loading the model you will be greeted with a promp like this one if the model was loaded successfully:
 ```
 Found model file.
 gptj_model_load: loading model from 'models\\ggml-gpt4all-j-v1.3-groovy.bin' - please wait ...
@@ -123,7 +123,7 @@ gptj_model_load: model size =  3609.38 MB / num tensors = 285
 Enter a query:
 ```
 
-<b>Note:</b> In case you encounter errors when loading the LLM, be sure that you are using the correct backend for the LLM you are using. Also, some answers might be incomplete or wrong, testing I have found that this can be improved by trying different chunk sizes, chunk overlap, n_ctx and target_source_chunks. You can use other models to test if their response is better than the ones tested so far, remember to search how you can use those models in langchain and their respective backends.
+<b>Note:</b> In case you encounter errors when loading the LLM, be sure that you are using the correct backend for the LLM you are using. Also, some answers might be incomplete or wrong. While testing I have found that this can be improved by trying different chunk sizes, chunk overlap, n_ctx and target_source_chunks. You can use other models to test if their response is better than the ones tested so far, remember to search how you can use those models with langchain and their respective backends.
 
 # System Requirements
 
