@@ -43,6 +43,8 @@ Analyze your code locally using a GPT4All LLM. No data shared and no internet co
 | GO | .go
 | Scala | .scala & .sc
 | Swift | .swift
+| PHP | .php
+| Latex | .tex
 
 [Here](https://github.com/hwchase17/langchain/blob/master/langchain/text_splitter.py) you can find the source code of the Langchain's Language Enum with the all the languages that are currently supported by Langchain.
 
