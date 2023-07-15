@@ -9,6 +9,7 @@ from langchain.llms import GPT4All
 from langchain.vectorstores import Chroma
 from langchain.callbacks import StdOutCallbackHandler
 from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 
 from langchain.vectorstores.base import VectorStoreRetriever
@@ -71,8 +72,6 @@ class Eunomia:
 
         qa = self._initialize_qa(llm, retriever)
 
-        chat_history = []
-
         print(
             r"""
      ______   __  __   __   __   ______   __    __   __   ______    
@@ -88,8 +87,7 @@ class Eunomia:
             if query in ["quit", "q"]:
                 break
 
-            response = qa({"question": query, "chat_history": chat_history})
-            chat_history.append((query, response["answer"]))
+            response = qa({"question": query})
 
     def _initialize_embeddings(self, model_name: str) -> HuggingFaceEmbeddings:
         """
@@ -176,7 +174,13 @@ class Eunomia:
         :return: A new ConversationalRetrievalChain object created from the GPT4All model and ConversationalRetrievalChain object.
         :rtype: ConversationalRetrievalChain
         """
-        return ConversationalRetrievalChain.from_llm(llm, retriever=retriever)
+        memory = ConversationBufferMemory(
+            memory_key="chat_history", return_messages=True
+        )
+
+        return ConversationalRetrievalChain.from_llm(
+            llm, retriever=retriever, memory=memory
+        )
 
 
 if __name__ == "__main__":
