@@ -5,17 +5,17 @@ import json
 from dotenv import load_dotenv
 from typing import Callable
 
-from langchain.vectorstores import Chroma
-from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.llms import GPT4All
-from langchain.chains import ConversationalRetrievalChain
+from langchain.vectorstores import Chroma
 from langchain.callbacks import StdOutCallbackHandler
+from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.chains import ConversationalRetrievalChain
+
+from langchain.vectorstores.base import VectorStoreRetriever
 
 from src.ingest import Ingestor
 
 from src.constants import CHROMA_SETTINGS
-
-load_dotenv()
 
 
 class Eunomia:
@@ -122,9 +122,9 @@ class Eunomia:
 
     def _initialize_retriever(
         self, chroma: Chroma, target_chunks: int
-    ) -> ConversationalRetrievalChain:
+    ) -> VectorStoreRetriever:
         """
-        Initializes a ConversationalRetrievalChain using the given Chroma instance and target number of chunks.
+        Initializes a retriever object to initialize the ConversationalRetrievealChain instance.
 
         :param chroma: A Chroma instance to be used to initialize the ConversationalRetrievalChain.
         :type chroma: Chroma
@@ -132,8 +132,7 @@ class Eunomia:
         :param target_chunks: The target number of chunks.
         :type target_chunks: int
 
-        :return: A ConversationalRetrievalChain instance.
-        :rtype: ConversationalRetrievalChain
+        :return: A VectorStoreRetriever object.
         """
         return chroma.as_retriever(
             search_kwargs={
@@ -181,6 +180,8 @@ class Eunomia:
 
 
 if __name__ == "__main__":
+    load_dotenv()
+
     eunomia = Eunomia()
 
     args = sys.argv
