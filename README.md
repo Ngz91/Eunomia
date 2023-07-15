@@ -9,7 +9,7 @@
 ![](https://img.shields.io/github/stars/Ngz91/Eunomia?style=for-the-badge&logo=starship&color=8bd5ca&logoColor=D9E0EE&labelColor=3D426B)
 [![](https://img.shields.io/github/repo-size/Ngz91/Eunomia?color=%23DDB6F2&label=SIZE&logo=codesandbox&style=for-the-badge&logoColor=D9E0EE&labelColor=3D426B)](https://github.com/Ngz91/Eunomia)
 <a href="https://github.com/Ngz91/dotfiles/issues">
-<img alt="Issues" src="https://img.shields.io/github/issues/Ngz91/dotfiles?style=for-the-badge&logo=bilibili&color=F5E0DC&logoColor=D9E0EE&labelColor=3D426B" />
+<img alt="Issues" src="https://img.shields.io/github/issues/Ngz91/Eunomia?style=for-the-badge&logo=bilibili&color=F5E0DC&logoColor=D9E0EE&labelColor=3D426B" />
 </a>
      
 </div>
