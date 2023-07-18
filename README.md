@@ -46,7 +46,7 @@ Analyze your code locally using a GPT4All LLM. No data shared and no internet co
 | PHP | .php
 | Latex | .tex
 
-[Here](https://github.com/hwchase17/langchain/blob/master/langchain/text_splitter.py) you can find the source code of the Langchain's Language Enum with the all the languages that are currently supported by Langchain.
+[Here's](https://github.com/hwchase17/langchain/blob/master/langchain/text_splitter.py) the link to the source code of the Langchain's Language Enum with all the languages that are currently supported by Langchain.
 
 # How to use
 
