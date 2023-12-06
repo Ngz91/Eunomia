@@ -150,8 +150,7 @@ If so set your archflags during pip install. eg: _ARCHFLAGS="-arch x86_64" pip3 
 
 # Some resources
 - Langchain's [Documentation](https://python.langchain.com/en/latest/index.html)
-- Langchain's [CodeTextSpliter](https://python.langchain.com/en/latest/modules/indexes/text_splitters/examples/code_splitter.html)
-- Use LangChain, GPT and Deep Lake to work with code base [article](https://python.langchain.com/en/latest/use_cases/code/code-analysis-deeplake.html) 
+- Langchain's [CodeTextSpliter](https://python.langchain.com/docs/modules/data_connection/document_transformers/text_splitters/code_splitter)
 - privateGPT [Repo](https://github.com/imartinez/privateGPT)
 - LocalGPT [Repo](https://github.com/PromtEngineer/localGPT)
 
